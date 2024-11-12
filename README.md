@@ -4,5 +4,5 @@ Dieses Repository dient als Template zur Erstellung einer CI/CD-Pipeline auf der
 ## Cloud Deploy
 **Benötigte Files:**
 - delivery-pipeline.yaml
-- skaffolf.yaml
+- skaffold.yaml
 - target.yaml
