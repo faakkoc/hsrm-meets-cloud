@@ -10,12 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: deploy.cloud.google.com/v1beta1
-kind: DeliveryPipeline
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
 metadata:
-  name: web-app
-description: web-app delivery pipeline
-serialPipeline:
- stages:
- - targetId: staging
- - targetId: prod
+  name: staging
+description: Staging environment
+gke:
+  cluster: projects/[PROJECT_ID]/locations/[REGION]/clusters/[STAGING_CLUSTER_NAME]
