@@ -1,0 +1,31 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Build and Push Docker Images
+      run: |
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:latest ./frontend
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:latest ./backend
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:latest
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:latest
+
+    - name: Deploy to GKE
+      run: |
+        kubectl apply -f kubernetes/frontend-deployment.yaml
+        kubectl apply -f kubernetes/backend-deployment.yaml
+        kubectl apply -f kubernetes/service.yaml
