@@ -1,8 +1,2 @@
-# Erstellung einer CI/CD-Pipeline auf der Google Cloud Plattform
-Dieses Repository dient als Template zur Erstellung einer CI/CD-Pipeline auf der GCP.
-
-## Cloud Deploy
-**Benötigte Files:**
-- delivery-pipeline.yaml
-- skaffold.yaml
-- target.yaml
+## Audio Video Editor Application
+This application shall demonstrate the basics of CI/CD in GCP
