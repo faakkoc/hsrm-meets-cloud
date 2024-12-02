@@ -26,6 +26,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gcr.io/[PROJECT_ID]/frontend:latest
+        image: gcr.io/hsrm-cloud/frontend:latest
         ports:
         - containerPort: 5000

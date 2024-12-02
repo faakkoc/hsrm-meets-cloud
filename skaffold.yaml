@@ -14,9 +14,9 @@ apiVersion: skaffold/v2beta29
 kind: Config
 build:
   artifacts:
-    - image: gcr.io/[PROJECT_ID]/frontend
+    - image: gcr.io/hsrm-cloud/frontend
       context: frontend
-    - image: gcr.io/[PROJECT_ID]/backend
+    - image: gcr.io/hsrm-cloud/backend
       context: backend
 deploy:
   kubectl:

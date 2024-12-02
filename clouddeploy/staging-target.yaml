@@ -16,4 +16,4 @@ metadata:
   name: staging
 description: Staging environment
 gke:
-  cluster: projects/[PROJECT_ID]/locations/[REGION]/clusters/[STAGING_CLUSTER_NAME]
+  cluster: projects/hsrm-cloud/locations/europe-west3/clusters/cd-staging

@@ -19,5 +19,5 @@ skaffold:
   version: v2beta29
   configPath: skaffold.yaml
   buildArtifacts:
-    - image: gcr.io/[PROJECT_ID]/frontend:latest
-    - image: gcr.io/[PROJECT_ID]/backend:latest
+    - image: gcr.io/hsrm-cloud/frontend:latest
+    - image: gcr.io/hsrm-cloud/backend:latest

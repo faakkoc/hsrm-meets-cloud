@@ -26,6 +26,6 @@ spec:
     spec:
       containers:
       - name: backend
-        image: gcr.io/[PROJECT_ID]/backend:latest
+        image: gcr.io/hsrm-cloud/backend:latest
         ports:
         - containerPort: 3000

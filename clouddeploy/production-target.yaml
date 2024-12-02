@@ -16,4 +16,4 @@ metadata:
   name: production
 description: Production environment
 gke:
-  cluster: projects/[PROJECT_ID]/locations/[REGION]/clusters/[PRODUCTION_CLUSTER_NAME]
+  cluster: projects/hsrm-cloud/locations/europe-west3/clusters/cd-prod
