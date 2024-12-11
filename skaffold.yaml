@@ -2,10 +2,10 @@ apiVersion: skaffold/v4beta11
 kind: Config
 metadata:
   name: my-app
-build:
-  artifacts:
-    - image: europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app
+manifests:
+  rawYaml:
+    - app.yaml
 deploy:
-  kubectl:
-    manifests:
-      - app.yaml
+  cloudrun:
+    projectid: hsrm-cloud-1
+    region: europe-west1
