@@ -3,6 +3,8 @@ kind: Target
 metadata:
   name: staging
 description: "Staging environment"
+run:
+  location: europe-west1
 executionConfigs:
   - usages: [RENDER, DEPLOY]
     defaultPool:
