@@ -24,9 +24,8 @@ steps:
     entrypoint: 'gcloud'
     args:
       [
-        'deploy', 'rollouts', 'create', '--release', 'release-$SHORT_SHA',
+        'deploy', 'rollouts', 'promote', '--release', 'release-$SHORT_SHA',
         '--region', 'europe-west1',
-        '--rollout-id', 'staging-rollout-$SHORT_SHA',
         '--to', 'staging'
       ]
 
