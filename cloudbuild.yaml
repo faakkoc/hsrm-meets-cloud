@@ -1,0 +1,33 @@
+# cloudbuild.yaml
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-f', 'container01/Dockerfile', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'deploy', 'releases', 'create', 'release-$SHORT_SHA',
+        '--delivery-pipeline', 'sample-pipeline',
+        '--region', 'europe-west1',
+        '--images', 'my-app=europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA',
+        '--annotations', 'commit_sha=$SHORT_SHA'
+      ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'deploy', 'rollouts', 'create', '--release', 'release-$SHORT_SHA',
+        '--region', 'europe-west1',
+        '--rollout-id', 'staging-rollout-$SHORT_SHA',
+        '--to', 'staging'
+      ]
+
+substitutions:
+  _SERVICE_NAME: "my-app"
+images:
+  - 'europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA'

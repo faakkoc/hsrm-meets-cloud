@@ -1,0 +1,10 @@
+apiVersion: deploy.cloud.google.com/v1
+kind: Target
+metadata:
+  name: staging
+description: "Staging environment"
+executionConfigs:
+  - usages: [RENDER, DEPLOY]
+    defaultPool:
+      artifactStorage: projects/hsrm-cloud-1/locations/europe-west1/repositories/my-repo
+      serviceAccount: projects/hsrm-cloud-1/serviceAccounts/cloud-deploy-sa@hsrm-cloud-1.iam.gserviceaccount.com
