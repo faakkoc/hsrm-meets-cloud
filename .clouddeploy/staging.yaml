@@ -8,5 +8,4 @@ run:
 executionConfigs:
   - usages: [RENDER, DEPLOY]
     defaultPool:
-      artifactStorage: projects/hsrm-cloud-1/locations/europe-west1/repositories/my-repo
       serviceAccount: cloud-deploy-sa@hsrm-cloud-1.iam.gserviceaccount.com
