@@ -26,7 +26,7 @@ steps:
       [
         'deploy', 'releases', 'promote', '--release', 'release-$SHORT_SHA',
         '--region', 'europe-west1',
-        '--to', 'staging'
+        '--to-target', 'staging'
       ]
 
 substitutions:
