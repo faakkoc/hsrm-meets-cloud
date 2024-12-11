@@ -3,6 +3,7 @@ kind: Target
 metadata:
   name: production
 description: "Production environment"
+run:
 executionConfigs:
   - usages: [RENDER, DEPLOY]
     defaultPool:
