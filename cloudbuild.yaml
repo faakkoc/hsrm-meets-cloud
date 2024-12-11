@@ -20,16 +20,6 @@ steps:
         '--annotations', 'commit_sha=$SHORT_SHA'
       ]
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
-    args:
-      [
-        'deploy', 'releases', 'promote', 'release-$SHORT_SHA',
-        '--delivery-pipeline', 'web-pipeline',
-        '--region', 'europe-west1',
-        '--to-target', 'staging'
-      ]
-
 substitutions:
   _SERVICE_NAME: "my-app"
 images:
