@@ -4,6 +4,7 @@ metadata:
   name: staging
 description: "Staging environment"
 run:
+  location: projects/hsrm-cloud-1/locations/europe-west1
 executionConfigs:
   - usages: [RENDER, DEPLOY]
     defaultPool:
