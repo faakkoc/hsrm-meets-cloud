@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-        - image: europe-west1-docker.pkg.dev/$PROJECT_ID/my-repo/my-app:$SHORT_SHA
+        - image: europe-west1-docker.pkg.dev/hsrm-cloud-1/my-repo/my-app
           ports:
             - containerPort: 8080
           env:
