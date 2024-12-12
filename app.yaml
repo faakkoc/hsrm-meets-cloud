@@ -7,7 +7,7 @@ spec:
   template:
     spec:
       containers:
-        - image: europe-west1-docker.pkg.dev/hsrm-cloud-1/my-repo/my-app:REPLACE_IMAGE_TAG
+        - image: europe-west1-docker.pkg.dev/hsrm-cloud-1/my-repo/my-app:a683580
           ports:
             - containerPort: 8080
           env:
