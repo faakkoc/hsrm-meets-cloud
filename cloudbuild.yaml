@@ -1,0 +1,44 @@
+steps:
+  # 1. Docker-Image bauen
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/transcoder:$COMMIT_SHA'
+      - './flask-app'
+
+  # 2. Docker-Image in Google Container Registry pushen
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - 'gcr.io/$PROJECT_ID/flask-app:$COMMIT_SHA'
+
+  # 3. Deployment auf Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - 'flask-app'
+      - '--image=gcr.io/$PROJECT_ID/flask-app:$COMMIT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'BUCKET_NAME=$_BUCKET_NAME,PROJECT_ID=$PROJECT_ID,REGION=$_REGION'
+
+  # 4. CORS-Konfiguration für den Bucket setzen
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - storage
+      - buckets
+      - update
+      - 'gs://$_BUCKET_NAME'
+      - '--cors-file=./cors.json'
+
+substitutions:
+  _REGION: 'us-central1'
+  _BUCKET_NAME: 'hsrm-cloud-bucket'
+
+timeout: '600s'
