@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from google.cloud import storage
 from google.cloud.video import transcoder_v1
 
@@ -11,16 +11,52 @@ storage_client = storage.Client()
 transcoder_client = transcoder_v1.TranscoderServiceClient()
 
 # GCP-Konfiguration
-PROJECT_ID = "hsrm-cloud-1"
+'''PROJECT_ID = "hsrm-cloud-1"
 REGION = "us-central1"
 BUCKET_NAME = "hsrm-cloud-bucket"
+'''
+PROJECT_ID = os.environ.get("PROJECT_ID", "hsrm-cloud-1")
+REGION = os.environ.get("REGION", "us-central1")
+BUCKET_NAME = os.environ.get("BUCKET_NAME", "hsrm-cloud-bucket")
 
 # Globaler Speicher für Job-Details
 job_store = {}
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Welcome! Transcode a video via POST to /transcode-video\n"
+    return render_template("index.html") # "Welcome! Transcode a video via POST to /transcode-video\n"
+
+@app.route("/player/<job_id>", methods=["GET"])
+def player(job_id):
+    # Job-Details abrufen
+    try:
+        job = transcoder_client.get_job(name=job_id)
+        job_details = job_store.get(job_id, {"input_uri": "", "output_uri": ""})
+        
+        # Nur wenn der Job erfolgreich abgeschlossen wurde
+        if job.state.name == "SUCCEEDED":
+            # Aus der Output-URI den Pfad zu den DASH-Dateien extrahieren
+            output_uri = job_details["output_uri"]
+            # URL zum Bucket extrahieren (ohne gs://)
+            bucket_name = output_uri.replace("gs://", "").split("/")[0]
+            
+            # Pfad extrahieren (alles nach dem Bucket-Namen)
+            output_path = "/".join(output_uri.replace("gs://", "").split("/")[1:])
+            if not output_path.endswith("/"):
+                output_path += "/"
+            
+            # MPD-Pfad für DASH-Streaming
+            mpd_path = f"{output_path}manifest.mpd"
+            
+            # Öffentliche URL zum MPD-File
+            mpd_url = f"https://storage.googleapis.com/{bucket_name}/{mpd_path}"
+            
+            return render_template("player.html", mpd_url=mpd_url)
+        else:
+            return {"error": f"Job not completed. Current state: {job.state.name}"}, 400
+    
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 @app.route("/transcode-video", methods=["POST"])
 def upload_video():
@@ -44,8 +80,8 @@ def upload_video():
             ],
             "mux_streams": [
                 {
-                    "key": "HLS",
-                    "container": "ts",
+                    "key": "DASH",
+                    "container": "fmp4",
                     "elementary_streams": ["video-stream", "audio-stream"],
                     "segment_settings": {
                         "segment_duration": {"seconds": 3}
@@ -59,9 +95,9 @@ def upload_video():
             ],
             "manifests": [
                 {
-                    "file_name": "manifest.m3u8",
-                    "type": "HLS",
-                    "mux_streams": ["HLS"]
+                    "file_name": "manifest.mpd",
+                    "type": "DASH",
+                    "mux_streams": ["DASH"]
                 }
             ]
         },
@@ -95,14 +131,21 @@ def job_status():
         # Input- und Output-URIs aus dem Speicher abrufen
         job_details = job_store.get(job_name, {"input_uri": "", "output_uri": ""})
 
-        return {
+        response_data = {
             "job_name": job.name,
             "state": job.state.name,
             "start_time": job.start_time.timestamp() if job.start_time else None,
             "end_time": job.end_time.timestamp() if job.end_time else None,
             "input_uri": job_details["input_uri"],
             "output_uri": job_details["output_uri"],
-        }    
+        }
+        
+        # Wenn der Job abgeschlossen ist, füge Player-URL hinzu
+        if job.state.name == "SUCCEEDED":
+            response_data["player_url"] = f"/player/{job.name}"
+            
+        return response_data
+    
     except Exception as e:
         return {"error": str(e)}, 500
 
