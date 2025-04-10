@@ -60,7 +60,7 @@ def player(job_id):
 
         elif job.state.name != "SUCCEEDED":
             return jsonify({"error": f"Job not completed. Current state: {job.state.name}"}), 400
-            
+
         else:
             return {"error": f"Job not completed. Current state: {job.state.name}"}, 400
     
@@ -89,9 +89,17 @@ def upload_video():
             ],
             "mux_streams": [
                 {
-                    "key": "DASH",
+                    "key": "video_fmp4",  # Neu: Separater Video-Stream
                     "container": "fmp4",
-                    "elementary_streams": ["video-stream", "audio-stream"],
+                    "elementary_streams": ["video-stream"],  # Nur Video-Stream
+                    "segment_settings": {
+                        "segment_duration": {"seconds": 3}
+                    }
+                },
+                {
+                    "key": "audio_fmp4",  # Neu: Separater Audio-Stream
+                    "container": "fmp4",
+                    "elementary_streams": ["audio-stream"],  # Nur Audio-Stream
                     "segment_settings": {
                         "segment_duration": {"seconds": 3}
                     }
@@ -106,7 +114,7 @@ def upload_video():
                 {
                     "file_name": "manifest.mpd",
                     "type": "DASH",
-                    "mux_streams": ["DASH"]
+                    "mux_streams": ["video_fmp4", "audio_fmp4"]
                 }
             ]
         },
