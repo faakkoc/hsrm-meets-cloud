@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 from google.cloud import storage
 from google.cloud.video import transcoder_v1
 
@@ -9,6 +9,11 @@ app = Flask(__name__)
 # Google Cloud Clients
 storage_client = storage.Client()
 transcoder_client = transcoder_v1.TranscoderServiceClient()
+
+# Error-Handler für alle Exceptions
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return jsonify({"error": str(e)}), 500
 
 # GCP-Konfiguration
 '''PROJECT_ID = "hsrm-cloud-1"
@@ -52,6 +57,10 @@ def player(job_id):
             mpd_url = f"https://storage.googleapis.com/{bucket_name}/{mpd_path}"
             
             return render_template("player.html", mpd_url=mpd_url)
+
+        elif job.state.name != "SUCCEEDED":
+            return jsonify({"error": f"Job not completed. Current state: {job.state.name}"}), 400
+            
         else:
             return {"error": f"Job not completed. Current state: {job.state.name}"}, 400
     
@@ -111,12 +120,13 @@ def upload_video():
     # Job-Daten speichern
     job_store[response.name] = {"input_uri": input_uri, "output_uri": output_uri}
 
-    return {
+    return jsonify({
         "message": "Transcoding process started! Use GET /job_status to see the progress",
         "job_name": response.name,
+        "player_url": f"/player/{response.name}",
         "input_uri": input_uri,
         "output_uri": output_uri,
-    }
+    })
 
 @app.route("/job_status", methods=["GET"])
 def job_status():
@@ -144,7 +154,7 @@ def job_status():
         if job.state.name == "SUCCEEDED":
             response_data["player_url"] = f"/player/{job.name}"
             
-        return response_data
+        return jsonify(response_data)
     
     except Exception as e:
         return {"error": str(e)}, 500

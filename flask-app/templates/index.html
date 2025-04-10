@@ -46,45 +46,47 @@
         const activeJobs = {};
         
         // Startet einen neuen Transkodierungsjob
-        document.getElementById('transcodeBtn').addEventListener('click', async () => {
-            const fileName = document.getElementById('fileName').value.trim();
-            if (!fileName) {
-                alert('Bitte gib einen Dateinamen ein');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/transcode-video', {
-                    method: 'POST',
-                    body: fileName
-                });
-                
-                const data = await response.json();
-                if (response.ok) {
-                    alert(`Job gestartet! Job-ID: ${data.job_name}`);
-                    activeJobs[data.job_name] = {
-                        status: 'RUNNING',
-                        details: data
-                    };
-                    updateJobsList();
-                    pollJobStatus(data.job_name);
-                } else {
-                    alert(`Fehler: ${data.error}`);
+            document.getElementById('transcodeBtn').addEventListener('click', async () => {
+                const fileName = document.getElementById('fileName').value.trim();
+                if (!fileName) {
+                    alert('Bitte gib einen Dateinamen ein');
+                    return;
                 }
-            } catch (error) {
-                alert(`Fehler: ${error.message}`);
-            }
-        });
+
+                try {
+                    const response = await fetch('/transcode-video', {
+                        method: 'POST',
+                        body: fileName
+                    });
+
+                    // Versuche erst die Antwort als Text zu lesen
+                    const responseText = await response.text();
+
+                    try {
+                        // Versuche dann, den Text als JSON zu parsen
+                        const data = JSON.parse(responseText);
+
+                        if (response.ok) {
+                            alert(`Job gestartet! Job-ID: ${data.job_name}`);
+                            activeJobs[data.job_name] = {
+                                status: 'RUNNING',
+                                details: data
+                            };
+                            updateJobsList();
+                            pollJobStatus(data.job_name);
+                        } else {
+                            alert(`Fehler: ${data.error || 'Unbekannter Fehler'}`);
+                        }
+                    } catch (jsonError) {
+                        // Wenn es kein gültiges JSON ist, zeige den Textinhalt an
+                        console.error("Keine gültige JSON-Antwort:", responseText);
+                        alert(`Server-Fehler: Keine gültige JSON-Antwort`);
+                    }
+                } catch (error) {
+                    alert(`Netzwerkfehler: ${error.message}`);
+                }
+            });
         
-        // Aktualisiert die Liste der Jobs
-        function updateJobsList() {
-            const jobsList = document.getElementById('jobsList');
-            
-            if (Object.keys(activeJobs).length === 0) {
-                jobsList.innerHTML = '<div class="text-muted">Keine Jobs vorhanden</div>';
-                return;
-            }
-            
             let html = '';
             for (const [jobId, job] of Object.entries(activeJobs)) {
                 const shortJobId = jobId.split('/').pop();
@@ -128,23 +130,31 @@
                     await checkJobStatus(jobId);
                 });
             });
-        }
         
         // Ruft den Job-Status ab
-        async function checkJobStatus(jobId) {
-            try {
-                const response = await fetch(`/job_status?job_name=${jobId}`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    activeJobs[jobId].status = data.state;
-                    activeJobs[jobId].details = data;
-                    updateJobsList();
+            async function checkJobStatus(jobId) {
+                try {
+                    const response = await fetch(`/job_status?job_name=${jobId}`);
+
+                    // Versuche erst die Antwort als Text zu lesen
+                    const responseText = await response.text();
+
+                    try {
+                        // Versuche dann, den Text als JSON zu parsen
+                        const data = JSON.parse(responseText);
+
+                        if (response.ok) {
+                            activeJobs[jobId].status = data.state;
+                            activeJobs[jobId].details = data;
+                            updateJobsList();
+                        }
+                    } catch (jsonError) {
+                        console.error("Keine gültige JSON-Antwort:", responseText);
+                    }
+                } catch (error) {
+                    console.error(`Fehler beim Abrufen des Job-Status: ${error}`);
                 }
-            } catch (error) {
-                console.error(`Fehler beim Abrufen des Job-Status: ${error}`);
             }
-        }
         
         // Regelmäßiges Abfragen des Job-Status
         function pollJobStatus(jobId) {
