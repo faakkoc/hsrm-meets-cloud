@@ -31,7 +31,7 @@ job_store = {}
 def home():
     return render_template("index.html") # "Welcome! Transcode a video via POST to /transcode-video\n"
 
-@app.route("/player/<job_id>", methods=["GET"])
+@app.route("/player/<path:job_id>", methods=["GET"])
 def player(job_id):
     # Job-Details abrufen
     try:
