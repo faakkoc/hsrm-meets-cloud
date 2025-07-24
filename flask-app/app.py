@@ -20,9 +20,9 @@ def handle_exception(e):
 REGION = "us-central1"
 BUCKET_NAME = "hsrm-cloud-bucket"
 '''
-PROJECT_ID = os.environ.get("PROJECT_ID", "hsrm-cloud-1")
-REGION = os.environ.get("REGION", "us-central1")
-BUCKET_NAME = os.environ.get("BUCKET_NAME", "hsrm-cloud-bucket")
+PROJECT_ID = os.environ.get("PROJECT_ID")
+REGION = os.environ.get("REGION")
+BUCKET_NAME = os.environ.get("BUCKET_NAME")
 
 # Globaler Speicher für Job-Details
 job_store = {}
