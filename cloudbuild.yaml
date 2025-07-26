@@ -1,7 +1,7 @@
 steps:
   # 1. Docker-Image bauen
   - id: "Docker Build"
-  - name: 'gcr.io/cloud-builders/docker'
+    name: 'gcr.io/cloud-builders/docker'
     args:
       - build
       - '-t'
@@ -10,14 +10,14 @@ steps:
 
   # 2. Docker-Image in Google Container Registry pushen
   - id: "Docker Push"
-  - name: 'gcr.io/cloud-builders/docker'
+    name: 'gcr.io/cloud-builders/docker'
     args:
       - push
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/transcoder-repo/flask-app:$COMMIT_SHA'
 
   # 3. Deployment auf Cloud Run
   - id: "Cloud Run Deployment"
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - run
@@ -32,7 +32,7 @@ steps:
 
   # 4. CORS-Konfiguration für den Bucket setzen
   - id: "CORS Configuration"
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - storage
