@@ -1,13 +1,11 @@
 import os
 
 from flask import Flask, request, render_template, jsonify
-from google.cloud import storage
 from google.cloud.video import transcoder_v1
 
 app = Flask(__name__)
 
-# Google Cloud Clients
-storage_client = storage.Client()
+# Google Cloud Transcoder Client
 transcoder_client = transcoder_v1.TranscoderServiceClient()
 
 # Error-Handler für alle Exceptions
