@@ -13,11 +13,6 @@ transcoder_client = transcoder_v1.TranscoderServiceClient()
 def handle_exception(e):
     return jsonify({"error": str(e)}), 500
 
-# GCP-Konfiguration
-'''PROJECT_ID = "hsrm-cloud-1"
-REGION = "us-central1"
-BUCKET_NAME = "hsrm-cloud-bucket"
-'''
 PROJECT_ID = os.environ.get("PROJECT_ID")
 REGION = os.environ.get("REGION")
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
