@@ -18,17 +18,20 @@ steps:
   # 3. Deployment auf Cloud Run
   - id: "Cloud Run Deployment"
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'bash'
     args:
-      - run
-      - deploy
-      - 'flask-app'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/transcoder-repo/flask-app:$COMMIT_SHA'
-      - '--region=$_REGION'
-      - '--platform=managed'
-      - '--allow-unauthenticated'
-      - '--set-env-vars'
-      - 'BUCKET_NAME=$_BUCKET_NAME,PROJECT_ID=$PROJECT_ID,REGION=$_REGION'
+      - -c
+      - |
+        SERVICE_NAME="flask-app-test"
+        if [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "master" ]; then
+          SERVICE_NAME="flask-app"
+        fi
+        gcloud run deploy $$SERVICE_NAME \
+          --image=us-central1-docker.pkg.dev/$PROJECT_ID/transcoder-repo/flask-app:$COMMIT_SHA \
+          --region=$_REGION \
+          --platform=managed \
+          --allow-unauthenticated \
+          --set-env-vars=BUCKET_NAME=$_BUCKET_NAME,PROJECT_ID=$PROJECT_ID,REGION=$_REGION
 
   # 4. CORS-Konfiguration für den Bucket setzen
   - id: "CORS Configuration"
