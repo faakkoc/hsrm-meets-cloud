@@ -43,7 +43,26 @@
     
     <script>
         // Speichert die aktiven Jobs
-        const activeJobs = {};
+        let activeJobs = {};
+
+        // Funktion zum Speichern der Jobs im sessionStorage
+        function saveJobsToSessionStorage() {
+            sessionStorage.setItem('activeJobs', JSON.stringify(activeJobs));
+        }
+
+        // Funktion zum Laden der Jobs aus dem sessionStorage
+        function loadJobsFromSessionStorage() {
+            const storedJobs = sessionStorage.getItem('activeJobs');
+            if (storedJobs) {
+                activeJobs = JSON.parse(storedJobs);
+                // Start polling for any jobs that are still RUNNING or PENDING
+                for (const jobId in activeJobs) {
+                    if (activeJobs[jobId].status === 'RUNNING' || activeJobs[jobId].status === 'PENDING') {
+                        pollJobStatus(jobId);
+                    }
+                }
+            }
+        }
 
         // Ruft den Job-Status ab
         async function checkJobStatus(jobId) {
@@ -55,6 +74,7 @@
                     if (response.ok) {
                         activeJobs[jobId].status = data.state;
                         activeJobs[jobId].details = data;
+                        saveJobsToSessionStorage(); // Save after status update
                         updateJobsList();
                     }
                 } catch (jsonError) {
@@ -155,6 +175,7 @@
                             status: 'PENDING',
                             details: data
                         };
+                        saveJobsToSessionStorage(); // Save after adding new job
                         updateJobsList();
                         pollJobStatus(data.job_name);
                     } else {
@@ -168,6 +189,10 @@
                 alert(`Netzwerkfehler: ${error.message}`);
             }
         });
+
+        // Initial load
+        loadJobsFromSessionStorage();
+        updateJobsList();
     </script>
 </body>
 </html>
