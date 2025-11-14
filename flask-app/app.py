@@ -78,8 +78,8 @@ def upload_video():
         "output_uri": output_uri,
         "config": {
             "elementary_streams": [
-                {"key": "video-stream", "video_stream": {"h264": {"height_pixels": 1080, "width_pixels": 1920, "frame_rate": 30, "bitrate_bps": 8000000}}},
-                {"key": "audio-stream", "audio_stream": {"codec": "aac", "bitrate_bps": 324000}},
+               # {"key": "video-stream", "video_stream": {"h264": {"height_pixels": 1080, "width_pixels": 1920, "frame_rate": 30, "bitrate_bps": 8000000}}},
+               # {"key": "audio-stream", "audio_stream": {"codec": "aac", "bitrate_bps": 324000}},
                 # Video-Streams für verschiedene Auflösungen
                 {"key": "video-stream-1080p", "video_stream": {"h264": {"height_pixels": 1080, "width_pixels": 1920, "frame_rate": 30, "bitrate_bps": 8000000}}},
                 {"key": "video-stream-720p", "video_stream": {"h264": {"height_pixels": 720, "width_pixels": 1280, "frame_rate": 30, "bitrate_bps": 4500000}}},
@@ -90,10 +90,10 @@ def upload_video():
             "mux_streams": [
                 # Mux-Stream für 1080p Video (nur Video)
                 {
-                    "key": "video_fmp4",  # Neu: Separater Video-Stream
+                #    "key": "video_fmp4",  # Neu: Separater Video-Stream
                     "key": "video_fmp4_1080p",
                     "container": "fmp4",
-                    "elementary_streams": ["video-stream"],  # Nur Video-Stream
+                 #   "elementary_streams": ["video-stream"],  # Nur Video-Stream
                     "elementary_streams": ["video-stream-1080p"],
                     "segment_settings": {
                         "segment_duration": {"seconds": 3}
@@ -101,10 +101,10 @@ def upload_video():
                 },
                 # Mux-Stream für 720p Video (nur Video)
                 {
-                    "key": "audio_fmp4",  # Neu: Separater Audio-Stream
+                  #  "key": "audio_fmp4",  # Neu: Separater Audio-Stream
                     "key": "video_fmp4_720p",
                     "container": "fmp4",
-                    "elementary_streams": ["audio-stream"],  # Nur Audio-Stream
+                   # "elementary_streams": ["audio-stream"],  # Nur Audio-Stream
                     "elementary_streams": ["video-stream-720p"],
                     "segment_settings": {
                         "segment_duration": {"seconds": 3}
@@ -128,7 +128,7 @@ def upload_video():
                 {
                     "key": "HD",
                     "container": "mp4",
-                    "elementary_streams": ["video-stream", "audio-stream"],
+                   # "elementary_streams": ["video-stream", "audio-stream"],
                     "elementary_streams": ["video-stream-1080p", "audio-stream"]
                 }
             ],
@@ -136,7 +136,7 @@ def upload_video():
                 {
                     "file_name": "manifest.mpd",
                     "type": "DASH",
-                    "mux_streams": ["video_fmp4", "audio_fmp4"],
+                   # "mux_streams": ["video_fmp4", "audio_fmp4"],
                     "mux_streams": ["video_fmp4_1080p", "video_fmp4_720p", "video_fmp4_480p", "audio_fmp4"]
                 }
             ]

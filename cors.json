@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["https://flask-app-164353741053.us-central1.run.app"],
+    "origin": ["https://flask-app-164353741053.us-central1.run.app", "https://flask-app-test-164353741053.us-central1.run.app/"],
     "method": ["GET", "HEAD"],
     "responseHeader": ["Content-Type"],
     "maxAgeSeconds": 3600
